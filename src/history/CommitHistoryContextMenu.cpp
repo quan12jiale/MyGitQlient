@@ -96,6 +96,14 @@ void CommitHistoryContextMenu::createIndividualShaMenu()
                connect(amendCommitAction, &QAction::triggered, this,
                        [this]() { emit signalAmendCommit(mShas.first()); });
 
+               const auto amendNoEditCommitAction = addAction(tr("Amend without edit"));
+               amendNoEditCommitAction->setToolTip(tr("Edit the last commit of the branch."));
+               connect(amendNoEditCommitAction, &QAction::triggered, this, [this]() {
+                  QScopedPointer<GitLocal> git(new GitLocal(mGit));
+                  git->ammend();
+                  emit void logReload();
+               });
+
                const auto applyMenu = addMenu(tr("Apply"));
 
                const auto applyPatchAction = applyMenu->addAction(tr("Patch"));
