@@ -382,14 +382,14 @@ void RepositoryViewDelegate::paintGraph(QPainter *p, const QStyleOptionViewItem 
          const auto activeLane = commit.getActiveLane();
          const auto activeColor
              = GitQlientStyles::getBranchColorAt(activeLane % GitQlientStyles::getTotalBranchColors());
-         auto x1 = 0;
+         
          auto isSet = false;
          auto laneHeadPresent = false;
          auto mergeColor = GitQlientStyles::getBranchColorAt((laneNum - 1) % GitQlientStyles::getTotalBranchColors());
 
          for (auto i = laneNum - 1, x2 = LANE_WIDTH * laneNum; i >= 0; --i, x2 -= LANE_WIDTH)
          {
-            x1 = x2 - LANE_WIDTH;
+            const int x1 = x2 - LANE_WIDTH;
 
             auto currentLane = commit.laneAt(i);
 

@@ -101,7 +101,6 @@ bool CommitInfo::isInWorkingBranch() const
       if (child->sha == CommitInfo::ZERO_SHA)
       {
          return true;
-         break;
       }
    }
 

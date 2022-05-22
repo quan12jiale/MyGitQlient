@@ -251,12 +251,11 @@ void FileDiffView::showStagingMenu(const QPoint &cursorPos)
 {
    const auto helpPos = mapFromGlobal(QCursor::pos());
    const auto x = helpPos.x();
-   auto row = -1;
 
    if (x >= 0 && x > mLineNumberArea->width())
    {
       const auto cursor = cursorForPosition(helpPos);
-      row = cursor.block().blockNumber() + mStartingLine + 1;
+      const int row = cursor.block().blockNumber() + mStartingLine + 1;
 
       if (row != -1)
       {

@@ -76,7 +76,7 @@ QStringList splitArgList(const QString &cmd)
    // first find a possible separator
    const QString sepList("#%&!?"); // separator candidates
    int i = 0;
-   while (cmd.contains(sepList[i]) && i < sepList.length())
+   while (i < sepList.length() && cmd.contains(sepList[i]))
       i++;
 
    if (i == sepList.length())

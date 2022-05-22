@@ -27,7 +27,6 @@ PrChangesList::PrChangesList(const QSharedPointer<GitBase> &git, QWidget *parent
 void PrChangesList::loadData(const GitServer::PullRequest &prInfo)
 {
    GitExecResult ret;
-   bool showDiff = true;
    QString head;
 
    if (prInfo.headRepo != prInfo.baseRepo)
@@ -42,6 +41,7 @@ void PrChangesList::loadData(const GitServer::PullRequest &prInfo)
              tr("The head branch of the Pull Request is not in the same repository. In order to show "
                 "the changes the remote must be added. <b>Do you want to get the remote branch?</b>"));
 
+		 bool showDiff = true;
          if (response == QMessageBox::Yes)
          {
             QScopedPointer<GitRemote> git(new GitRemote(mGit));
