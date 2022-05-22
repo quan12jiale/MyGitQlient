@@ -171,7 +171,7 @@ void MergeWidget::fillButtonFileList(const RevisionFiles &files)
       QScopedPointer<GitWip> git(new GitWip(mGit, mGitQlientCache));
 
       if (fileInConflict && fileDeleted)
-         item->setData(Qt::UserRole + 1, static_cast<int>(git->getFileStatus(fileName).value()));
+         item->setData(Qt::UserRole + 1, static_cast<int>(git->getFileStatus(fileName).first));
       else
          item->setData(Qt::UserRole + 1, 0);
 
@@ -400,8 +400,8 @@ void MergeWidget::cherryPickCommit()
 
             const auto files = mGitQlientCache->revisionFile(CommitInfo::ZERO_SHA, wipCommit.firstParent());
 
-            if (files)
-               configureForCherryPick(files.value(), shas);
+            if (files.second)
+               configureForCherryPick(files.first, shas);
          }
          else
          {

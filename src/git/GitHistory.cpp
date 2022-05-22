@@ -6,7 +6,7 @@
 
 #include <QLogger.h>
 
-#include <QStringLiteral>
+//#include <QStringLiteral>
 
 using namespace QLogger;
 
@@ -139,8 +139,8 @@ GitExecResult GitHistory::getUntrackedFileDiff(const QString &file) const
    auto cmd = QString("git add --intent-to-add %1").arg(file);
 
    QLog_Trace("Git", QString("Simulating we stage the file: {%1}").arg(cmd));
-
-   if (auto ret = mGitBase->run(cmd); ret.success)
+   auto ret = mGitBase->run(cmd);
+   if (ret.success)
    {
       cmd = QString("git diff %1").arg(file);
 

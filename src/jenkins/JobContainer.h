@@ -3,7 +3,7 @@
 #include <IFetcher.h>
 #include <JenkinsJobInfo.h>
 #include <JenkinsViewInfo.h>
-
+#include "References.h"
 #include <QFrame>
 
 class QVBoxLayout;

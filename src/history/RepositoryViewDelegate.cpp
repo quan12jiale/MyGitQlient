@@ -113,7 +113,8 @@ void RepositoryViewDelegate::paint(QPainter *p, const QStyleOptionViewItem &opt,
       QFontMetrics fm(newOpt.font);
       p->setFont(newOpt.font);
 
-      if (const auto cursorColumn = mView->indexAt(mView->mapFromGlobal(QCursor::pos())).column();
+	  const auto cursorColumn = mView->indexAt(mView->mapFromGlobal(QCursor::pos())).column();
+      if (
           newOpt.state & QStyle::State_MouseOver && cursorColumn == index.column()
           && cursorColumn == static_cast<int>(CommitHistoryColumns::Sha))
       {
@@ -433,7 +434,8 @@ void RepositoryViewDelegate::paintLog(QPainter *p, const QStyleOptionViewItem &o
 
    if (mGitServerCache)
    {
-      if (const auto pr = mGitServerCache->getPullRequest(commit.sha); pr.isValid())
+	   const auto pr = mGitServerCache->getPullRequest(commit.sha);
+      if (pr.isValid())
       {
          offset = 5;
          paintPrStatus(p, opt, offset, pr);
@@ -467,7 +469,8 @@ void RepositoryViewDelegate::paintTagBranch(QPainter *painter, QStyleOptionViewI
 
       if ((currentBranch.isEmpty() || currentBranch == "HEAD"))
       {
-         if (const auto ret = mGit->getLastCommit(); ret.success && sha == ret.output.trimmed())
+		  const auto ret = mGit->getLastCommit();
+         if (ret.success && sha == ret.output.trimmed())
          {
             marks.append("detached");
             colors.append(graphDetached);

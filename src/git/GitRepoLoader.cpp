@@ -274,7 +274,7 @@ void GitRepoLoader::processRevisions(QByteArray ba)
    const auto files = git->getUntrackedFiles();
 
    mRevCache->setUntrackedFilesList(std::move(files));
-   const auto info = git->getWipInfo().value();
+   const auto info = git->getWipInfo().first;
 
    mRevCache->setup(info.first, info.second, std::move(commits));
 
@@ -300,7 +300,8 @@ QVector<CommitInfo> GitRepoLoader::processUnsignedLog(QByteArray &log) const
    auto pos = 0;
    while (!lines.isEmpty())
    {
-      if (auto commit = CommitInfo { lines.takeFirst() }; commit.isValid())
+	   auto commit = CommitInfo{ lines.takeFirst() };
+      if (commit.isValid())
       {
          commit.pos = ++pos;
          commits.append(std::move(commit));
@@ -349,7 +350,8 @@ QVector<CommitInfo> GitRepoLoader::processSignedLog(QByteArray &log) const
       {
          if (!commit.isEmpty())
          {
-            if (auto revision = CommitInfo { commit, gpgKey, goodSignature }; revision.isValid())
+			 auto revision = CommitInfo{ commit, gpgKey, goodSignature };
+            if (revision.isValid())
             {
                revision.pos = pos++;
                commits.append(std::move(revision));

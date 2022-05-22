@@ -263,7 +263,11 @@ void GitQlientRepo::createProgressDialog()
    if (!mWaitDlg)
    {
       mWaitDlg = new WaitingDlg(tr("Loading repository..."));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
       mWaitDlg->setWindowFlag(Qt::Tool);
+#else
+	  mWaitDlg->setWindowFlags(mWaitDlg->windowFlags() | Qt::Tool);
+#endif
       mWaitDlg->open();
 
       QApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
@@ -316,7 +320,8 @@ void GitQlientRepo::onRepoLoadFinished(bool fullReload)
    if (mWaitDlg)
       mWaitDlg->close();
 
-   if (QScopedPointer<GitMerge> gitMerge(new GitMerge(mGitBase, mGitQlientCache)); gitMerge->isInMerge())
+   QScopedPointer<GitMerge> gitMerge(new GitMerge(mGitBase, mGitQlientCache));
+   if (gitMerge->isInMerge())
    {
       mControls->activateMergeWarning();
       showWarningMerge();
@@ -324,14 +329,18 @@ void GitQlientRepo::onRepoLoadFinished(bool fullReload)
       QMessageBox::warning(this, tr("Merge in progress"),
                            tr("There is a merge conflict in progress. Solve the merge before moving on."));
    }
-   else if (QScopedPointer<GitLocal> gitMerge(new GitLocal(mGitBase)); gitMerge->isInCherryPickMerge())
+   else
    {
+	   QScopedPointer<GitLocal> gitMerge(new GitLocal(mGitBase));
+	   if (gitMerge->isInCherryPickMerge())
+	   {
       mControls->activateMergeWarning();
       showCherryPickConflict();
 
       QMessageBox::warning(
           this, tr("Cherry-pick in progress"),
           tr("There is a cherry-pick in progress that contains with conflicts. Solve them before moving on."));
+	   }
    }
 
    emit currentBranchChanged();
@@ -385,8 +394,8 @@ void GitQlientRepo::showWarningMerge()
 
    const auto file = mGitQlientCache->revisionFile(CommitInfo::ZERO_SHA, wipCommit.firstParent());
 
-   if (file)
-      mMergeWidget->configure(file.value(), MergeWidget::ConflictReason::Merge);
+   if (file.second)
+      mMergeWidget->configure(file.first, MergeWidget::ConflictReason::Merge);
 }
 
 // TODO: Optimize
@@ -401,8 +410,8 @@ void GitQlientRepo::showCherryPickConflict(const QStringList &shas)
 
    const auto files = mGitQlientCache->revisionFile(CommitInfo::ZERO_SHA, wipCommit.firstParent());
 
-   if (files)
-      mMergeWidget->configureForCherryPick(files.value(), shas);
+   if (files.second)
+      mMergeWidget->configureForCherryPick(files.first, shas);
 }
 
 // TODO: Optimize
@@ -417,8 +426,8 @@ void GitQlientRepo::showPullConflict()
 
    const auto files = mGitQlientCache->revisionFile(CommitInfo::ZERO_SHA, wipCommit.firstParent());
 
-   if (files)
-      mMergeWidget->configure(files.value(), MergeWidget::ConflictReason::Pull);
+   if (files.second)
+      mMergeWidget->configure(files.first, MergeWidget::ConflictReason::Pull);
 }
 
 void GitQlientRepo::showMergeView()

@@ -144,7 +144,8 @@ void PomodoroButton::mouseReleaseEvent(QMouseEvent *e)
 
 bool PomodoroButton::eventFilter(QObject *obj, QEvent *event)
 {
-   if (const auto menu = qobject_cast<QMenu *>(obj); menu && event->type() == QEvent::Show)
+	const auto menu = qobject_cast<QMenu *>(obj);
+   if (menu && event->type() == QEvent::Show)
    {
       auto localPos = mButton->pos();
       localPos.setX(localPos.x());

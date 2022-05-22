@@ -81,8 +81,8 @@ BranchesWidget::BranchesWidget(const QSharedPointer<GitCache> &cache, const QSha
    , mMinimize(new QPushButton())
    , mMinimal(new BranchesWidgetMinimal(mCache, mGit))
 {
-   connect(mCache.get(), &GitCache::signalCacheUpdated, this, &BranchesWidget::showBranches);
-   connect(mCache.get(), &GitCache::signalCacheUpdated, this, &BranchesWidget::processTags);
+   connect(mCache.data(), &GitCache::signalCacheUpdated, this, &BranchesWidget::showBranches);
+   connect(mCache.data(), &GitCache::signalCacheUpdated, this, &BranchesWidget::processTags);
 
    setAttribute(Qt::WA_DeleteOnClose);
 
@@ -113,7 +113,8 @@ BranchesWidget::BranchesWidget(const QSharedPointer<GitCache> &cache, const QSha
    GitQlientSettings settings(mGit->getGitDir());
 
    /* STASHES START */
-   if (const auto visible = settings.localValue("StashesHeader", true).toBool(); !visible)
+   auto visible = settings.localValue("StashesHeader", true).toBool();
+   if (!visible)
    {
       const auto icon = QIcon(!visible ? QString(":/icons/add") : QString(":/icons/remove"));
       mStashesArrow->setPixmap(icon.pixmap(QSize(15, 15)));
@@ -148,7 +149,8 @@ BranchesWidget::BranchesWidget(const QSharedPointer<GitCache> &cache, const QSha
    /* STASHES END */
 
    /* SUBMODULES START */
-   if (const auto visible = settings.localValue("SubmodulesHeader", true).toBool(); !visible)
+   visible = settings.localValue("SubmodulesHeader", true).toBool();
+   if (!visible)
    {
       const auto icon = QIcon(!visible ? QString(":/icons/add") : QString(":/icons/remove"));
       mSubmodulesArrow->setPixmap(icon.pixmap(QSize(15, 15)));
@@ -186,7 +188,8 @@ BranchesWidget::BranchesWidget(const QSharedPointer<GitCache> &cache, const QSha
    /* SUBMODULES END */
 
    /* SUBTREE START */
-   if (const auto visible = settings.localValue("SubtreeHeader", true).toBool(); !visible)
+   visible = settings.localValue("SubtreeHeader", true).toBool();
+   if (!visible)
    {
       const auto icon = QIcon(!visible ? QString(":/icons/add") : QString(":/icons/remove"));
       mSubtreeArrow->setPixmap(icon.pixmap(QSize(15, 15)));

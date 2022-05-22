@@ -65,7 +65,8 @@ void Lanes::setFork(const QString &sha)
 
    for (int i = rangeStart + 1; i < rangeEnd; ++i)
    {
-      switch (auto &t = typeVec[i]; t.getType())
+	   auto &t = typeVec[i];
+      switch (t.getType())
       {
          case LaneType::NOT_ACTIVE:
             t.setType(LaneType::CROSS);

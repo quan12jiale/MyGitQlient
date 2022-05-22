@@ -14,7 +14,7 @@ IssuesList::IssuesList(const QSharedPointer<GitServerCache> &gitServerCache, QWi
 {
    mHeaderTitle->setText(tr("Issues"));
 
-   connect(mGitServerCache.get(), &GitServerCache::issuesReceived, this,
+   connect(mGitServerCache.data(), &GitServerCache::issuesReceived, this,
            [this]() { onIssuesReceived(mGitServerCache->getIssues()); });
 
    onIssuesReceived(mGitServerCache->getIssues());

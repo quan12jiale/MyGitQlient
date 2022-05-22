@@ -90,8 +90,8 @@ BranchesWidgetMinimal::BranchesWidgetMinimal(const QSharedPointer<GitCache> &cac
 
 bool BranchesWidgetMinimal::eventFilter(QObject *obj, QEvent *event)
 {
-
-   if (const auto menu = qobject_cast<QMenu *>(obj); menu && event->type() == QEvent::Show)
+	const auto menu = qobject_cast<QMenu *>(obj);
+   if (menu && event->type() == QEvent::Show)
    {
       auto localPos = menu->parentWidget()->pos();
       localPos.setX(localPos.x());
@@ -134,7 +134,7 @@ void BranchesWidgetMinimal::configureTagsMenu(const QString &sha, const QString 
 
 void BranchesWidgetMinimal::configureStashesMenu(const QString &stashId, const QString &name)
 {
-   const auto action = new QAction(name);
+   const auto action = new QAction(name, this);
    action->setData(stashId);
    connect(action, &QAction::triggered, this, [this, stashId] { emit stashSelected(stashId); });
 
@@ -144,7 +144,7 @@ void BranchesWidgetMinimal::configureStashesMenu(const QString &stashId, const Q
 
 void BranchesWidgetMinimal::configureSubmodulesMenu(const QString &name)
 {
-   const auto action = new QAction(name);
+   const auto action = new QAction(name, this);
    action->setData(name);
    mSubmodulesMenu->addAction(action);
    mSubmodules->setText("   " + QString::number(mSubmodulesMenu->actions().count()));

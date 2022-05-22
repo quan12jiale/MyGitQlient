@@ -77,6 +77,14 @@ protected:
    {
       bool keep = false;
       QListWidgetItem *item = nullptr;
+
+	  WipCacheItem() = default;
+	  WipCacheItem(bool AKeep,
+		  QListWidgetItem *AItem) 
+		  : 
+		  keep(AKeep),
+		  item(AItem)
+	  {}
    };
 
    Ui::CommitChangesWidget *ui = nullptr;

@@ -26,7 +26,7 @@
 #include <Issue.h>
 #include <GitServerCache.h>
 #include <document.h>
-
+#include "References.h"
 #include <QFrame>
 #include <QMutex>
 
@@ -81,7 +81,7 @@ public:
 
 private:
    QMutex mMutex;
-   QSharedPointer<GitServerCache> mGitServerCache = nullptr;
+   QSharedPointer<GitServerCache> mGitServerCache{ nullptr };
    QNetworkAccessManager *mManager = nullptr;
    QFrame *mCommentsFrame = nullptr;
    QVBoxLayout *mIssuesLayout = nullptr;
@@ -94,7 +94,7 @@ private:
    int mIssueNumber = -1;
    QMap<int, QFrame *> mComments {};
    QMap<int, int> mFrameLinks {};
-   inline static int mCommentId = 0;
+   static int mCommentId;
    Document m_content;
    QVector<Document *> m_commentContents;
 

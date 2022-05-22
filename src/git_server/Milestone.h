@@ -36,6 +36,22 @@ struct Milestone
    QString title;
    QString description;
    bool isOpen = false;
+
+   Milestone() = default;
+   Milestone(int AId, 
+	   int ANumber, 
+	   QString ANodeId,
+	   QString ATitle,
+	   QString ADescription,
+	   bool AIsOpen)
+	   :
+	   id(AId),
+	   number(ANumber),
+	   nodeId(ANodeId),
+	   title(ATitle),
+	   description(ADescription),
+	   isOpen(AIsOpen)
+   {}
 };
 
 }

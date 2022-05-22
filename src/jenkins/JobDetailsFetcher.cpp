@@ -88,24 +88,24 @@ void JobDetailsFetcher::retrieveBuildConfig(const QJsonArray &propertyArray)
          for (const auto &config : params)
          {
             JenkinsJobBuildConfig jobConfig;
-            jobConfig.name = config[QStringLiteral("name")].toString();
+            jobConfig.name = config.toObject()[QStringLiteral("name")].toString();
 
-            if (config[QStringLiteral("type")].toString() == "BooleanParameterDefinition")
+            if (config.toObject()[QStringLiteral("type")].toString() == "BooleanParameterDefinition")
                jobConfig.fieldType = JobConfigFieldType::Bool;
-            else if (config[QStringLiteral("type")].toString() == "StringParameterDefinition")
+            else if (config.toObject()[QStringLiteral("type")].toString() == "StringParameterDefinition")
                jobConfig.fieldType = JobConfigFieldType::String;
-            else if (config[QStringLiteral("type")].toString() == "ChoiceParameterDefinition")
+            else if (config.toObject()[QStringLiteral("type")].toString() == "ChoiceParameterDefinition")
             {
                jobConfig.fieldType = JobConfigFieldType::Choice;
 
-               const auto choices = config[QStringLiteral("choices")].toArray();
+               const auto choices = config.toObject()[QStringLiteral("choices")].toArray();
 
                for (const auto &choiceValue : choices)
                   jobConfig.choicesValues.append(choiceValue.toString());
             }
 
             jobConfig.defaultValue
-                = config[QStringLiteral("defaultParameterValue")].toObject()[QStringLiteral("value")].toVariant();
+                = config.toObject()[QStringLiteral("defaultParameterValue")].toObject()[QStringLiteral("value")].toVariant();
 
             configParams.append(jobConfig);
          }

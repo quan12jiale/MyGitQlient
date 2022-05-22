@@ -181,7 +181,7 @@ void QLoggerWriter::enqueue(const QDateTime &date, const QString &threadId, cons
    {
       text = QString("[%1][%2][%3][%4]%5 %6")
                  .arg(levelToText(level), module)
-                 .arg(date.toSecsSinceEpoch())
+                 .arg(date.toMSecsSinceEpoch() / 1000)
                  .arg(threadId, fileLine, message);
    }
    else
@@ -193,7 +193,7 @@ void QLoggerWriter::enqueue(const QDateTime &date, const QString &threadId, cons
          text.append(QString("[%1]").arg(module));
 
       if (mMessageOptions.testFlag(LogMessageDisplay::DateTime))
-         text.append(QString("[%1]").arg(date.toSecsSinceEpoch()));
+         text.append(QString("[%1]").arg(date.toMSecsSinceEpoch() / 1000));
 
       if (mMessageOptions.testFlag(LogMessageDisplay::ThreadId))
          text.append(QString("[%1]").arg(threadId));

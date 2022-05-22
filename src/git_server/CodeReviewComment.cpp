@@ -42,12 +42,12 @@ CodeReviewComment::CodeReviewComment(const GitServer::CodeReview &review, QWidge
 
    body->setUrl(QUrl(QString("qrc:/resources/index_%1.html").arg(style)));
    body->setFixedHeight(20);
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
    connect(page, &PreviewPage::contentsSizeChanged, this, [body](const QSizeF size) {
       if (body)
          body->setFixedHeight(size.height());
    });
-
+#endif
    m_content.setText(review.body);
 
    const auto frame = new QFrame();

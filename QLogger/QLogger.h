@@ -23,7 +23,7 @@
  ***************************************************************************************/
 
 #include <QLoggerLevel.h>
-
+#include "References.h"
 #include <QMutex>
 #include <QMap>
 #include <QVariant>

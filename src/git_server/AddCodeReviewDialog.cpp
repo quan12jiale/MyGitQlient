@@ -42,7 +42,8 @@ void AddCodeReviewDialog::accept()
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
    if (const auto text = ui->teComment->toMarkdown(); !text.isEmpty())
 #else
-   if (const auto text = ui->teComment->toPlainText(); !text.isEmpty())
+	const auto text = ui->teComment->toPlainText();
+   if (!text.isEmpty())
 #endif
    {
       emit commentAdded(text);

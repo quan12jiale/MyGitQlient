@@ -55,7 +55,7 @@ void BuildGeneralInfoFetcher::processData(const QJsonDocument &json)
       for (const auto &artifact : artifacts)
       {
          JenkinsJobBuildInfo::Artifact sArtifact;
-         sArtifact.fileName = artifact[QStringLiteral("fileName")].toString();
+         sArtifact.fileName = artifact.toObject()[QStringLiteral("fileName")].toString();
          sArtifact.url = QString("%1artifact/%2").arg(jsonObject[QStringLiteral("url")].toString(), sArtifact.fileName);
 
          mBuild.artifacts.append(sArtifact);

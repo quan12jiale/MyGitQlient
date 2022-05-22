@@ -148,8 +148,8 @@ GitQlient::~GitQlient()
 
 bool GitQlient::eventFilter(QObject *obj, QEvent *event)
 {
-
-   if (const auto menu = qobject_cast<QMenu *>(obj); menu && event->type() == QEvent::Show)
+	const auto menu = qobject_cast<QMenu *>(obj);
+   if (menu && event->type() == QEvent::Show)
    {
       auto localPos = menu->parentWidget()->pos();
       auto pos = mapToGlobal(localPos);
@@ -445,7 +445,8 @@ void GitQlient::updateWindowTitle()
 
    if (const auto currentTab = dynamic_cast<GitQlientRepo *>(mRepos->currentWidget()))
    {
-      if (const auto repoPath = currentTab->currentDir(); !repoPath.isEmpty())
+	   const auto repoPath = currentTab->currentDir();
+      if (!repoPath.isEmpty())
       {
          const auto currentName = repoPath.split("/").last();
          const auto currentBranch = currentTab->currentBranch();

@@ -95,8 +95,13 @@ void PrChangeListItem::openReviewDialog(int line)
    const auto path = qobject_cast<LineNumberArea *>(sender()) == mNewNumberArea ? mNewFileName : mOldFileName;
 
    const auto dlg = new AddCodeReviewDialog(ReviewMode::Comment);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
    dlg->setWindowFlag(Qt::FramelessWindowHint);
    dlg->setWindowFlag(Qt::Tool);
+#else
+   dlg->setWindowFlags(dlg->windowFlags() | Qt::FramelessWindowHint);
+   dlg->setWindowFlags(dlg->windowFlags() | Qt::Tool);
+#endif
    dlg->setWindowModality(Qt::ApplicationModal);
    dlg->setModal(true);
 

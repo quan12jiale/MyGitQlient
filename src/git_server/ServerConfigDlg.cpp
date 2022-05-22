@@ -115,8 +115,8 @@ void ServerConfigDlg::accept()
    settings.setGlobalValue(QString("%1/token").arg(mData.serverUrl), ui->leUserToken->text());
    settings.setGlobalValue(QString("%1/endpoint").arg(mData.serverUrl), endpoint);
 
-   connect(mGitServerCache.get(), &GitServerCache::errorOccurred, this, &ServerConfigDlg::onGitServerError);
-   connect(mGitServerCache.get(), &GitServerCache::connectionTested, this, [this]() { onDataValidated(); });
+   connect(mGitServerCache.data(), &GitServerCache::errorOccurred, this, &ServerConfigDlg::onGitServerError);
+   connect(mGitServerCache.data(), &GitServerCache::connectionTested, this, [this]() { onDataValidated(); });
 
    mGitServerCache->init(mData.serverUrl, mData.repoInfo);
 }

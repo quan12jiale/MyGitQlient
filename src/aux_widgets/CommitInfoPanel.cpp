@@ -72,7 +72,7 @@ void CommitInfoPanel::configure(const CommitInfo &commit)
    mLabelTitle->setText(commit.shortLog);
    mLabelAuthor->setText(authorName);
 
-   QDateTime commitDate = QDateTime::fromSecsSinceEpoch(commit.dateSinceEpoch.count());
+   QDateTime commitDate = QDateTime::fromMSecsSinceEpoch(commit.dateSinceEpoch.count() * 1000);
    mLabelDateTime->setText(commitDate.toString("dd/MM/yyyy hh:mm"));
 
    const auto description = commit.longLog;

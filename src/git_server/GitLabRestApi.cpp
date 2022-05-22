@@ -181,7 +181,8 @@ void GitLabRestApi::onIssueReceived()
 
       for (const auto &issueData : issuesArray)
       {
-         if (const auto issueObj = issueData.toObject(); !issueObj.contains("pull_request"))
+		  const auto issueObj = issueData.toObject();
+         if (!issueObj.contains("pull_request"))
             issues.append(issueFromJson(issueObj));
       }
    }
@@ -409,10 +410,10 @@ Issue GitLabRestApi::issueFromJson(const QJsonObject &json) const
    for (const auto &assignee : assignees)
    {
       GitServer::User sAssignee;
-      sAssignee.id = assignee["id"].toInt();
-      sAssignee.url = assignee["web_url"].toString();
-      sAssignee.name = assignee["username"].toString();
-      sAssignee.avatar = assignee["avatar_url"].toString();
+      sAssignee.id = assignee.toObject()["id"].toInt();
+      sAssignee.url = assignee.toObject()["web_url"].toString();
+      sAssignee.name = assignee.toObject()["username"].toString();
+      sAssignee.avatar = assignee.toObject()["avatar_url"].toString();
 
       issue.assignees.append(sAssignee);
    }

@@ -12,8 +12,12 @@ namespace
 {
 QString loginApp()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
    const auto askPassApp = qEnvironmentVariable("SSH_ASKPASS");
-
+#else
+	QByteArray ba = qgetenv("SSH_ASKPASS");
+	const auto askPassApp = QString::fromUtf8(ba);
+#endif
    if (!askPassApp.isEmpty())
       return QString("%1=%2").arg("SSH_ASKPASS", askPassApp);
 

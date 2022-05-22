@@ -42,11 +42,15 @@ void AddRemoteDlg::accept()
           this, tr("Invalid fields"),
           tr("The information provided is incorrect. Please fix the URL and/or the name and submit again."));
    }
-   else if (const auto ret = git->addRemote(remoteUrl, remoteName); ret.success)
+   else
    {
+	   const auto ret = git->addRemote(remoteUrl, remoteName);
+	   if (ret.success)
+	   { 
       git->fetch();
 
       QDialog::accept();
+	   }
    }
 }
 

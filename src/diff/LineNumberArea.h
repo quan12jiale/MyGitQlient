@@ -24,7 +24,7 @@
  ***************************************************************************************/
 
 #include <QWidget>
-
+#include "References.h"
 #include <QMap>
 
 class FileDiffView;

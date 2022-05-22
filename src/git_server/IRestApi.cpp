@@ -54,7 +54,7 @@ QJsonDocument IRestApi::validateData(QNetworkReply *reply, QString &errorString)
          const auto errors = jsonObject[QStringLiteral("errors")].toArray();
 
          for (const auto &error : errors)
-            details = error[QStringLiteral("message")].toString();
+            details = error.toObject()[QStringLiteral("message")].toString();
 
          errorString = message + ". " + details;
 

@@ -24,8 +24,8 @@ QVector<QString> GitSubmodules::getSubmodules()
    QLog_Trace("Git", QString("Getting submodules: {%1}").arg(cmd));
 
    QVector<QString> submodulesList;
-
-   if (const auto ret = mGitBase->run(cmd); ret.success)
+   const auto ret = mGitBase->run(cmd);
+   if (ret.success)
    {
       const auto submodules = ret.output.split('\n');
 

@@ -58,6 +58,7 @@
 #include <QRegularExpression>
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
+#include "References.h"
 
 QT_BEGIN_NAMESPACE
 class QTextDocument;

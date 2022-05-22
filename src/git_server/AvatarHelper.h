@@ -45,8 +45,8 @@ inline void storeCreatorAvatar(QNetworkAccessManager *manager, QNetworkReply *re
       dir.mkpath(cache);
 
    const auto path = QString("%1/%2").arg(dir.absolutePath(), fileName);
-
-   if (QFile file(path); file.open(QIODevice::WriteOnly))
+   QFile file(path);
+   if (file.open(QIODevice::WriteOnly))
    {
       file.write(data);
       file.close();
@@ -78,7 +78,11 @@ inline QPointer<CircularPixmap> createAvatar(const QString &userName, const QStr
       const auto manager = new QNetworkAccessManager();
       QNetworkRequest request;
       request.setUrl(avatarUrl);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
       request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, true);
+#else
+	  request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+#endif
       const auto reply = manager->get(request);
       QObject::connect(reply, &QNetworkReply::finished, [manager, reply, avatar, userName]() {
          if (avatar)

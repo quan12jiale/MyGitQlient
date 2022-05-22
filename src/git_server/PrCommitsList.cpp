@@ -34,7 +34,7 @@ PrCommitsList::~PrCommitsList()
 
 void PrCommitsList::loadData(int number)
 {
-   connect(mGitServerCache.get(), &GitServerCache::prUpdated, this, &PrCommitsList::onCommitsReceived,
+   connect(mGitServerCache.data(), &GitServerCache::prUpdated, this, &PrCommitsList::onCommitsReceived,
            Qt::UniqueConnection);
 
    mPrNumber = number;
@@ -46,7 +46,7 @@ void PrCommitsList::loadData(int number)
 
 void PrCommitsList::onCommitsReceived(const GitServer::PullRequest &pr)
 {
-   disconnect(mGitServerCache.get(), &GitServerCache::prUpdated, this, &PrCommitsList::onCommitsReceived);
+   disconnect(mGitServerCache.data(), &GitServerCache::prUpdated, this, &PrCommitsList::onCommitsReceived);
 
    if (mPrNumber != pr.number)
       return;

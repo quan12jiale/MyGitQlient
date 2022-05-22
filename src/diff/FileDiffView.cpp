@@ -153,7 +153,11 @@ int FileDiffView::getLineHeigth() const
 
 int FileDiffView::lineNumberAreaWidth()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
    const auto width = fontMetrics().horizontalAdvance(QLatin1Char('9'));
+#else
+	const auto width = fontMetrics().width(QLatin1Char('9'));
+#endif
    auto digits = mLineNumberArea ? mLineNumberArea->widthInDigitsSize() : 0;
    auto max = blockCount() + mStartingLine;
 

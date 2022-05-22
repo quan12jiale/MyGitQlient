@@ -14,7 +14,7 @@ PrList::PrList(const QSharedPointer<GitServerCache> &gitServerCache, QWidget *pa
 {
    mHeaderTitle->setText(tr("Pull Requests"));
 
-   connect(mGitServerCache.get(), &GitServerCache::prReceived, this,
+   connect(mGitServerCache.data(), &GitServerCache::prReceived, this,
            [this]() { onPullRequestsReceived(mGitServerCache->getPullRequests()); });
 
    onPullRequestsReceived(mGitServerCache->getPullRequests());

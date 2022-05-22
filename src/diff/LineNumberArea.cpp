@@ -35,8 +35,11 @@ void LineNumberArea::setEditor(FileDiffView *editor)
 void LineNumberArea::paintEvent(QPaintEvent *event)
 {
    QPainter painter(this);
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
    const auto fontWidth = fileDiffWidget->fontMetrics().horizontalAdvance(QLatin1Char(' '));
+#else
+   const auto fontWidth = fileDiffWidget->fontMetrics().width(QLatin1Char(' '));
+#endif
    const auto offset = fontWidth * (mCommentsAllowed ? 4 : 1);
    auto block = fileDiffWidget->firstVisibleBlock();
    auto blockNumber = block.blockNumber() + fileDiffWidget->mStartingLine;

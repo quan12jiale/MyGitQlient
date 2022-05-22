@@ -31,6 +31,8 @@
 
 using namespace GitServer;
 
+int PrCommentsList::mCommentId = 0;
+
 PrCommentsList::PrCommentsList(const QSharedPointer<GitServerCache> &gitServerCache, QWidget *parent)
    : QFrame(parent)
    , mMutex(QMutex::Recursive)
@@ -49,9 +51,9 @@ void PrCommentsList::loadData(PrCommentsList::Config config, int issueNumber)
 {
    QMutexLocker lock(&mMutex);
 
-   connect(mGitServerCache.get(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments,
+   connect(mGitServerCache.data(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments,
            Qt::UniqueConnection);
-   connect(mGitServerCache.get(), &GitServerCache::prReviewsReceived, this, &PrCommentsList::onReviewsReceived,
+   connect(mGitServerCache.data(), &GitServerCache::prReviewsReceived, this, &PrCommentsList::onReviewsReceived,
            Qt::UniqueConnection);
 
    mConfig = config;
@@ -82,7 +84,7 @@ void PrCommentsList::loadData(PrCommentsList::Config config, int issueNumber)
    });
 
    connect(add, &QPushButton::clicked, this, [issue, this]() {
-      connect(mGitServerCache.get(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments,
+      connect(mGitServerCache.data(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments,
               Qt::UniqueConnection);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
       mGitServerCache->getApi()->addIssueComment(issue, mInputTextEdit->toMarkdown());
@@ -227,12 +229,12 @@ void PrCommentsList::loadData(PrCommentsList::Config config, int issueNumber)
 
    body->setUrl(QUrl(QString("qrc:/resources/index_%1.html").arg(style)));
    body->setFixedHeight(20);
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
    connect(page, &PreviewPage::contentsSizeChanged, this, [body](const QSizeF size) {
       if (body)
          body->setFixedHeight(size.height());
    });
-
+#endif
    m_content.setText(QString::fromUtf8(issue.body));
 
    bodyDescLayout->addWidget(body);
@@ -286,7 +288,7 @@ void PrCommentsList::processComments(const Issue &issue)
 {
    QMutexLocker lock(&mMutex);
 
-   disconnect(mGitServerCache.get(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments);
+   disconnect(mGitServerCache.data(), &GitServerCache::issueUpdated, this, &PrCommentsList::processComments);
 
    if (mIssueNumber != issue.number)
       return;
@@ -408,12 +410,12 @@ QLayout *PrCommentsList::createBubbleForComment(const Comment &comment)
    page->setWebChannel(channel);
 
    QPointer<QWebEngineView> body = new QWebEngineView();
-
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 7, 0))
    connect(page, &PreviewPage::contentsSizeChanged, this, [body](const QSizeF size) {
       if (body)
          body->setFixedHeight(size.height());
    });
-
+#endif
    body->setPage(page);
    body->setUrl(QUrl(QString("qrc:/resources/index_%1.html").arg(style)));
    body->setFixedHeight(20);

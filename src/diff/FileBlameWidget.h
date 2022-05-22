@@ -115,6 +115,19 @@ private:
       QDateTime dateTime;
       int line = 0;
       QString content;
+
+	  Annotation() = default;
+	  Annotation(QString ASha,
+		  QString AAuthor,
+		  QDateTime ADateTime,
+		  int ALine,
+		  QString AContent)
+		  : sha(ASha),
+		  author(AAuthor),
+		  dateTime(ADateTime),
+		  line(ALine),
+		  content(AContent)
+	  {}
    };
 
    /*!

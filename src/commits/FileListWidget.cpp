@@ -67,41 +67,42 @@ void FileListWidget::insertFiles(const QString &currentSha, const QString &compa
 
    auto files = mCache->revisionFile(mCurrentSha, compareToSha);
 
-   if (!files)
+   if (!files.second)
    {
       QScopedPointer<GitHistory> git(new GitHistory(mGit));
       const auto ret = git->getDiffFiles(mCurrentSha, compareToSha);
 
       if (ret.success)
       {
-         files = RevisionFiles(ret.output);
-         mCache->insertRevisionFiles(mCurrentSha, compareToSha, files.value());
+		 files.first = RevisionFiles(ret.output);
+		 files.second = true;//<optional>
+         mCache->insertRevisionFiles(mCurrentSha, compareToSha, files.first);
       }
    }
 
-   if (files->count() != 0)
+   if (files.first.count() != 0)
    {
       setUpdatesEnabled(false);
 
-      for (auto i = 0; i < files->count(); ++i)
+      for (auto i = 0; i < files.first.count(); ++i)
       {
-         if (!files->statusCmp(i, RevisionFiles::UNKNOWN))
+         if (!files.first.statusCmp(i, RevisionFiles::UNKNOWN))
          {
             QColor clr;
             QString fileName;
 
-            if (files->statusCmp(i, RevisionFiles::NEW))
+            if (files.first.statusCmp(i, RevisionFiles::NEW))
             {
-               const auto fileRename = files->extendedStatus(i);
+               const auto fileRename = files.first.extendedStatus(i);
 
                clr = fileRename.isEmpty() ? GitQlientStyles::getGreen() : GitQlientStyles::getBlue();
-               fileName = fileRename.isEmpty() ? files->getFile(i) : fileRename;
+               fileName = fileRename.isEmpty() ? files.first.getFile(i) : fileRename;
             }
             else
             {
-               clr = files->statusCmp(i, RevisionFiles::DELETED) ? GitQlientStyles::getRed()
+               clr = files.first.statusCmp(i, RevisionFiles::DELETED) ? GitQlientStyles::getRed()
                                                                  : GitQlientStyles::getTextColor();
-               fileName = files->getFile(i);
+               fileName = files.first.getFile(i);
             }
 
             addItem(fileName, clr);

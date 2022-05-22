@@ -38,8 +38,8 @@ void WipWidget::configure(const QString &sha)
 
    prepareCache();
 
-   if (files)
-      insertFiles(files.value(), ui->unstagedFilesList);
+   if (files.second)
+      insertFiles(files.first, ui->unstagedFilesList);
 
    clearCache();
 
@@ -64,12 +64,13 @@ void WipWidget::commitChanges()
          QScopedPointer<GitWip> git(new GitWip(mGit, mCache));
          git->updateWip();
 
-         if (const auto files = mCache->revisionFile(CommitInfo::ZERO_SHA, revInfo.firstParent()); files)
+		 const auto files = mCache->revisionFile(CommitInfo::ZERO_SHA, revInfo.firstParent());
+         if (files.second)
          {
             const auto lastShaBeforeCommit = mGit->getLastCommit().output.trimmed();
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
             QScopedPointer<GitLocal> gitLocal(new GitLocal(mGit));
-            const auto ret = gitLocal->commitFiles(selFiles, files.value(), msg);
+            const auto ret = gitLocal->commitFiles(selFiles, files.first, msg);
             QApplication::restoreOverrideCursor();
 
             if (ret.success)
@@ -86,7 +87,7 @@ void WipWidget::commitChanges()
 
                CommitInfo newCommit { currentSha,
                                       { lastShaBeforeCommit },
-                                      std::chrono::seconds(QDateTime::currentDateTime().toSecsSinceEpoch()),
+                                      std::chrono::seconds(QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000),
                                       ui->leCommitTitle->text() };
 
                newCommit.committer = QString("%1<%2>").arg(committer.mUserName, committer.mUserEmail);

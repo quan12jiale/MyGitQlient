@@ -209,7 +209,8 @@ void IssueDetailedView::loadData(IssueDetailedView::Config config, int issueNum,
 
 bool IssueDetailedView::eventFilter(QObject *obj, QEvent *event)
 {
-   if (const auto menu = qobject_cast<QMenu *>(obj); menu && event->type() == QEvent::Show)
+	const auto menu = qobject_cast<QMenu *>(obj);
+   if (menu && event->type() == QEvent::Show)
    {
       auto localPos = menu->parentWidget()->pos();
       localPos.setX(localPos.x() - menu->width() + menu->parentWidget()->width());
@@ -231,8 +232,8 @@ void IssueDetailedView::onViewChange(int viewId)
 
 void IssueDetailedView::closeIssue()
 {
-   if (const auto ret = QMessageBox::question(this, tr("Close issue"), tr("Are you sure you want to close the issue?"));
-       ret == QMessageBox::Yes)
+	const auto ret = QMessageBox::question(this, tr("Close issue"), tr("Are you sure you want to close the issue?"));
+   if (ret == QMessageBox::Yes)
    {
       mIssue.isOpen = false;
       mGitServerCache->getApi()->updateIssue(mIssue.number, mIssue);

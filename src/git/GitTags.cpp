@@ -29,10 +29,10 @@ GitTags::GitTags(const QSharedPointer<GitBase> &gitBase, const QSharedPointer<Gi
 
 bool GitTags::getRemoteTags() const
 {
-   if (!mCache.get())
+   if (!mCache.data())
    {
       QLog_Fatal("Git", QString("Getting remote tags without cache."));
-      assert(mCache.get());
+      assert(mCache.data());
    }
 
    QLog_Debug("Git", QString("Getting remote tags"));

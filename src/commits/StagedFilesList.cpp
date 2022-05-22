@@ -13,7 +13,8 @@ StagedFilesList::StagedFilesList(QWidget *parent)
 
 void StagedFilesList::onContextMenu(const QPoint &pos)
 {
-   if (mSelectedItem = itemAt(pos); mSelectedItem != nullptr)
+	mSelectedItem = itemAt(pos);
+   if (mSelectedItem != nullptr)
    {
       const auto menu = new QMenu(this);
 

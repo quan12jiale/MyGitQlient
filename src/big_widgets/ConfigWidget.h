@@ -2,6 +2,7 @@
 
 #include <QMap>
 #include <QWidget>
+#include "References.h"
 
 class GitBase;
 class QTimer;

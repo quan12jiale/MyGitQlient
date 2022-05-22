@@ -92,8 +92,8 @@ void CommitHistoryContextMenu::createIndividualShaMenu()
          addBranchActions(sha);
 
          QScopedPointer<GitBranches> git(new GitBranches(mGit));
-
-         if (auto ret = git->getLastCommitOfBranch(mGit->getCurrentBranch()); ret.success)
+		 auto ret = git->getLastCommitOfBranch(mGit->getCurrentBranch());
+         if (ret.success)
          {
             const auto lastShaStr = ret.output.trimmed();
 
@@ -161,8 +161,8 @@ void CommitHistoryContextMenu::createIndividualShaMenu()
 
       addSeparator();
       addMenu(gitServerMenu);
-
-      if (const auto pr = mGitServerCache->getPullRequest(mShas.first()); singleSelection && pr.isValid())
+	  const auto pr = mGitServerCache->getPullRequest(mShas.first());
+      if (singleSelection && pr.isValid())
       {
          const auto prInfo = mGitServerCache->getPullRequest(mShas.first());
 
@@ -633,7 +633,7 @@ void CommitHistoryContextMenu::addBranchActions(const QString &sha)
       if (!branchTracking.isEmpty() && pair.first != currentBranch
           && pair.first != QString("origin/%1").arg(currentBranch))
       {
-         const auto checkoutCommitAction = new QAction(QString(tr("%1")).arg(pair.first));
+         const auto checkoutCommitAction = new QAction(QString(tr("%1")).arg(pair.first), this);
          checkoutCommitAction->setData(pair.second);
          connect(checkoutCommitAction, &QAction::triggered, this, &CommitHistoryContextMenu::checkoutBranch);
          branchesToCheckout.append(checkoutCommitAction);

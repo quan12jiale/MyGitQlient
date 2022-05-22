@@ -166,16 +166,16 @@ CommitInfo GitCache::commitInfo(const QString &sha)
    return CommitInfo();
 }
 
-std::optional<RevisionFiles> GitCache::revisionFile(const QString &sha1, const QString &sha2) const
+std::pair<RevisionFiles, bool> GitCache::revisionFile(const QString &sha1, const QString &sha2) const
 {
    QMutexLocker lock(&mRevisionsMutex);
 
    const auto iter = mRevisionFilesMap.constFind(qMakePair(sha1, sha2));
 
    if (iter != mRevisionFilesMap.cend())
-      return *iter;
+      return std::make_pair(*iter, true);
 
-   return std::nullopt;
+   return std::make_pair(RevisionFiles{}, false);
 }
 
 void GitCache::clearReferences()
@@ -202,7 +202,7 @@ void GitCache::insertWipRevision(const QString parentSha, const RevisionFiles &f
       mLanes.init(CommitInfo::ZERO_SHA);
 
    const auto log = files.count() == mUntrackedFiles.count() ? tr("No local changes") : tr("Local changes");
-   CommitInfo c(CommitInfo::ZERO_SHA, parents, std::chrono::seconds(QDateTime::currentSecsSinceEpoch()), log);
+   CommitInfo c(CommitInfo::ZERO_SHA, parents, std::chrono::seconds(QDateTime::currentMSecsSinceEpoch() / 1000), log);
    calculateLanes(c);
 
    if (mCommits[0])
@@ -411,10 +411,12 @@ bool GitCache::pendingLocalChanges()
 
    auto localChanges = false;
 
-   if (const auto commit = mCommitsMap.value(CommitInfo::ZERO_SHA, CommitInfo()); commit.isValid())
+   const auto commit = mCommitsMap.value(CommitInfo::ZERO_SHA, CommitInfo());
+   if (commit.isValid())
    {
-      if (const auto rf = revisionFile(CommitInfo::ZERO_SHA, commit.firstParent()); rf)
-         localChanges = rf.value().count() - mUntrackedFiles.count() > 0;
+	   const auto rf = revisionFile(CommitInfo::ZERO_SHA, commit.firstParent());
+      if (rf.second)
+         localChanges = rf.first.count() - mUntrackedFiles.count() > 0;
    }
 
    return localChanges;
@@ -477,7 +479,8 @@ bool GitCache::checkSha(const QString &originalSha, const QString &currentSha) c
    if (originalSha == currentSha)
       return true;
 
-   if (const auto iter = mCommitsMap.find(currentSha); iter != mCommitsMap.cend())
+   const auto iter = mCommitsMap.find(currentSha);
+   if (iter != mCommitsMap.cend())
       return checkSha(originalSha, iter->firstParent());
 
    return false;

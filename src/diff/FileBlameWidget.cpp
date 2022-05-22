@@ -20,7 +20,7 @@ static const std::array<const char *, kTotalColors> kBorderColors { { "25, 65, 9
                                                                       "56, 136, 205", "87, 155, 213", "118, 174, 221",
                                                                       "150, 192, 221", "197, 220, 240" } };
 qint64 kSecondsNewest = 0;
-qint64 kSecondsOldest = QDateTime::currentDateTime().toSecsSinceEpoch();
+qint64 kSecondsOldest = QDateTime::currentDateTime().toMSecsSinceEpoch() / 1000;
 qint64 kIncrementSecs = 0;
 }
 
@@ -144,7 +144,7 @@ QVector<FileBlameWidget::Annotation> FileBlameWidget::processBlame(const QString
 
       if (revision.sha != CommitInfo::ZERO_SHA)
       {
-         const auto dtSinceEpoch = dt.toSecsSinceEpoch();
+         const auto dtSinceEpoch = dt.toMSecsSinceEpoch() / 1000;
 
          if (kSecondsNewest < dtSinceEpoch)
             kSecondsNewest = dtSinceEpoch;
@@ -302,7 +302,7 @@ QLabel *FileBlameWidget::createNumLabel(const Annotation &annotation, int row)
 
    if (annotation.sha != CommitInfo::ZERO_SHA)
    {
-      const auto dtSinceEpoch = annotation.dateTime.toSecsSinceEpoch();
+      const auto dtSinceEpoch = annotation.dateTime.toMSecsSinceEpoch() / 1000;
       const auto colorIndex = qCeil((kSecondsNewest - dtSinceEpoch) / kIncrementSecs);
       numberLabel->setStyleSheet(
           QString("QLabel { border-left: 5px solid rgb(%1) }").arg(QString::fromUtf8(kBorderColors.at(colorIndex))));

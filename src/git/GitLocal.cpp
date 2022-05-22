@@ -217,14 +217,15 @@ GitExecResult GitLocal::commitFiles(QStringList &selFiles, const RevisionFiles &
 
    for (auto i = 0; i < allCommitFiles.count(); ++i)
    {
-      if (const auto &fp = allCommitFiles.getFile(i);
+	   const auto &fp = allCommitFiles.getFile(i);
+      if (
           selFiles.indexOf(fp) == -1 && allCommitFiles.statusCmp(i, RevisionFiles::IN_INDEX))
       {
          notSel.append(fp);
       }
    }
-
-   if (const auto updIdx = updateIndex(allCommitFiles, selFiles); !updIdx.success)
+   const auto updIdx = updateIndex(allCommitFiles, selFiles);
+   if (!updIdx.success)
       return updIdx;
 
    QLog_Debug("Git", QString("Committing files"));

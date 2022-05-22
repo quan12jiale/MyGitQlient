@@ -29,7 +29,7 @@ JenkinsWidget::JenkinsWidget(const QSharedPointer<GitQlientSettings> &settings, 
    const auto user = settings->localValue("BuildSystemUser", "").toString();
    const auto token = settings->localValue("BuildSystemToken", "").toString();
 
-   mConfig = IFetcher::Config { user, token, nullptr };
+   mConfig = IFetcher::Config{ user, token, QSharedPointer<QNetworkAccessManager>{nullptr} };
    mConfig.accessManager.reset(new QNetworkAccessManager());
 
    const auto superBtnsLayout = new QVBoxLayout();

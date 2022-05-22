@@ -38,15 +38,16 @@ void AmendWidget::configure(const QString &sha)
    const auto files = mCache->revisionFile(CommitInfo::ZERO_SHA, sha);
    auto amendFiles = mCache->revisionFile(sha, commit.firstParent());
 
-   if (!amendFiles)
+   if (!amendFiles.second)
    {
       QScopedPointer<GitHistory> git(new GitHistory(mGit));
       const auto ret = git->getDiffFiles(mCurrentSha, commit.firstParent());
 
       if (ret.success)
       {
-         amendFiles = RevisionFiles(ret.output);
-         mCache->insertRevisionFiles(mCurrentSha, commit.firstParent(), amendFiles.value());
+         amendFiles.first = RevisionFiles(ret.output);
+		 amendFiles.second = true;//<optional>
+         mCache->insertRevisionFiles(mCurrentSha, commit.firstParent(), amendFiles.first);
       }
    }
 
@@ -68,11 +69,11 @@ void AmendWidget::configure(const QString &sha)
       mInternalCache.clear();
       blockSignals(false);
 
-      if (files)
-         insertFiles(files.value(), ui->unstagedFilesList);
+      if (files.second)
+         insertFiles(files.first, ui->unstagedFilesList);
 
-      if (amendFiles)
-         insertFiles(amendFiles.value(), ui->stagedFilesList);
+      if (amendFiles.second)
+         insertFiles(amendFiles.first, ui->stagedFilesList);
    }
    else
    {
@@ -80,13 +81,13 @@ void AmendWidget::configure(const QString &sha)
 
       prepareCache();
 
-      if (files)
-         insertFiles(files.value(), ui->unstagedFilesList);
+      if (files.second)
+         insertFiles(files.first, ui->unstagedFilesList);
 
       clearCache();
 
-      if (amendFiles)
-         insertFiles(amendFiles.value(), ui->stagedFilesList);
+      if (amendFiles.second)
+         insertFiles(amendFiles.first, ui->stagedFilesList);
    }
 
    ui->applyActionBtn->setEnabled(ui->stagedFilesList->count());
@@ -112,13 +113,13 @@ void AmendWidget::commitChanges()
 
          const auto files = mCache->revisionFile(CommitInfo::ZERO_SHA, mCurrentSha);
 
-         if (files)
+         if (files.second)
          {
             const auto author = QString("%1<%2>").arg(ui->leAuthorName->text(), ui->leAuthorEmail->text());
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
             QScopedPointer<GitLocal> gitLocal(new GitLocal(mGit));
-            const auto ret = gitLocal->ammendCommit(selFiles, files.value(), msg, author);
+            const auto ret = gitLocal->ammendCommit(selFiles, files.first, msg, author);
             QApplication::restoreOverrideCursor();
 
             emit logReload();

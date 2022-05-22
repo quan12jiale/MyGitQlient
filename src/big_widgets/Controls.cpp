@@ -426,7 +426,8 @@ void Controls::configBuildSystemButton()
 
 bool Controls::eventFilter(QObject *obj, QEvent *event)
 {
-   if (const auto menu = qobject_cast<QMenu *>(obj); menu && event->type() == QEvent::Show)
+	const auto menu = qobject_cast<QMenu *>(obj);
+   if (menu && event->type() == QEvent::Show)
    {
       auto localPos = menu->parentWidget()->pos();
       localPos.setX(localPos.x());

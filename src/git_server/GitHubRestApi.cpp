@@ -77,8 +77,8 @@ void GitHubRestApi::updateIssue(int issueNumber, const Issue &issue)
       const auto reply = qobject_cast<QNetworkReply *>(sender());
       QString errorStr;
       const auto tmpDoc = validateData(reply, errorStr);
-
-      if (const auto issueObj = tmpDoc.object(); !issueObj.contains("pull_request"))
+	  const auto issueObj = tmpDoc.object();
+      if (!issueObj.contains("pull_request"))
       {
          const auto issue = issueFromJson(issueObj);
          emit issueUpdated(issue);
@@ -101,8 +101,8 @@ void GitHubRestApi::updatePullRequest(int number, const PullRequest &pr)
       const auto reply = qobject_cast<QNetworkReply *>(sender());
       QString errorStr;
       const auto tmpDoc = validateData(reply, errorStr);
-
-      if (const auto issueObj = tmpDoc.object(); issueObj.contains("pull_request"))
+	  const auto issueObj = tmpDoc.object();
+      if (issueObj.contains("pull_request"))
       {
          const auto pr = prFromJson(issueObj);
          emit pullRequestUpdated(pr);
@@ -577,8 +577,8 @@ void GitHubRestApi::onPullRequestMerged()
 void GitHubRestApi::onPullRequestReceived()
 {
    const auto reply = qobject_cast<QNetworkReply *>(sender());
-
-   if (const auto pagination = QString::fromUtf8(reply->rawHeader("Link")); !pagination.isEmpty())
+   const auto pagination = QString::fromUtf8(reply->rawHeader("Link"));
+   if (!pagination.isEmpty())
    {
       QStringList pages = pagination.split(",");
       auto current = 0;
@@ -657,15 +657,15 @@ void GitHubRestApi::onPullRequestStatusReceived(PullRequest pr)
 
       for (const auto &status : statuses)
       {
-         auto statusStr = status["state"].toString();
+         auto statusStr = status.toObject()["state"].toString();
 
          if (statusStr == "ok")
             statusStr = "success";
          else if (statusStr == "error")
             statusStr = "failure";
 
-         PullRequest::HeadState::Check check { status["description"].toString(), statusStr,
-                                               status["target_url"].toString(), status["context"].toString() };
+         PullRequest::HeadState::Check check { status.toObject()["description"].toString(), statusStr,
+                                               status.toObject()["target_url"].toString(), status.toObject()["context"].toString() };
 
          pr.state.checks.append(std::move(check));
       }
@@ -679,8 +679,8 @@ void GitHubRestApi::onPullRequestStatusReceived(PullRequest pr)
 void GitHubRestApi::onIssuesReceived()
 {
    const auto reply = qobject_cast<QNetworkReply *>(sender());
-
-   if (const auto pagination = QString::fromUtf8(reply->rawHeader("Link")); !pagination.isEmpty())
+   const auto pagination = QString::fromUtf8(reply->rawHeader("Link"));
+   if (!pagination.isEmpty())
    {
       QStringList pages = pagination.split(",");
       auto current = 0;
@@ -715,7 +715,8 @@ void GitHubRestApi::onIssuesReceived()
 
       for (const auto &issueData : issuesArray)
       {
-         if (const auto issueObj = issueData.toObject(); !issueObj.contains("pull_request"))
+		  const auto issueObj = issueData.toObject();
+         if (!issueObj.contains("pull_request"))
             issues.append(issueFromJson(issueObj));
       }
    }
@@ -742,17 +743,17 @@ void GitHubRestApi::onCommentsReceived(int issueNumber)
       for (const auto &commentData : commentsArray)
       {
          Comment c;
-         c.id = commentData["id"].toInt();
-         c.body = commentData["body"].toString();
-         c.creation = commentData["created_at"].toVariant().toDateTime();
-         c.association = commentData["author_association"].toString();
+         c.id = commentData.toObject()["id"].toInt();
+         c.body = commentData.toObject()["body"].toString();
+         c.creation = commentData.toObject()["created_at"].toVariant().toDateTime();
+         c.association = commentData.toObject()["author_association"].toString();
 
          GitServer::User sAssignee;
-         sAssignee.id = commentData["user"].toObject()["id"].toInt();
-         sAssignee.url = commentData["user"].toObject()["html_url"].toString();
-         sAssignee.name = commentData["user"].toObject()["login"].toString();
-         sAssignee.avatar = commentData["user"].toObject()["avatar_url"].toString();
-         sAssignee.type = commentData["user"].toObject()["type"].toString();
+         sAssignee.id = commentData.toObject()["user"].toObject()["id"].toInt();
+         sAssignee.url = commentData.toObject()["user"].toObject()["html_url"].toString();
+         sAssignee.name = commentData.toObject()["user"].toObject()["login"].toString();
+         sAssignee.avatar = commentData.toObject()["user"].toObject()["avatar_url"].toString();
+         sAssignee.type = commentData.toObject()["user"].toObject()["type"].toString();
 
          c.creator = std::move(sAssignee);
          comments.append(std::move(c));
@@ -800,21 +801,21 @@ void GitHubRestApi::onReviewsReceived(int prNumber)
 
       for (const auto &commentData : commentsArray)
       {
-         auto id = commentData["id"].toInt();
+         auto id = commentData.toObject()["id"].toInt();
 
          Review r;
          r.id = id;
-         r.body = commentData["body"].toString();
-         r.creation = commentData["submitted_at"].toVariant().toDateTime();
-         r.state = commentData["state"].toString();
-         r.association = commentData["author_association"].toString();
+         r.body = commentData.toObject()["body"].toString();
+         r.creation = commentData.toObject()["submitted_at"].toVariant().toDateTime();
+         r.state = commentData.toObject()["state"].toString();
+         r.association = commentData.toObject()["author_association"].toString();
 
          GitServer::User sAssignee;
-         sAssignee.id = commentData["user"].toObject()["id"].toInt();
-         sAssignee.url = commentData["user"].toObject()["html_url"].toString();
-         sAssignee.name = commentData["user"].toObject()["login"].toString();
-         sAssignee.avatar = commentData["user"].toObject()["avatar_url"].toString();
-         sAssignee.type = commentData["user"].toObject()["type"].toString();
+         sAssignee.id = commentData.toObject()["user"].toObject()["id"].toInt();
+         sAssignee.url = commentData.toObject()["user"].toObject()["html_url"].toString();
+         sAssignee.name = commentData.toObject()["user"].toObject()["login"].toString();
+         sAssignee.avatar = commentData.toObject()["user"].toObject()["avatar_url"].toString();
+         sAssignee.type = commentData.toObject()["user"].toObject()["type"].toString();
 
          r.creator = std::move(sAssignee);
          reviews.insert(id, std::move(r));
@@ -848,37 +849,37 @@ void GitHubRestApi::onReviewCommentsReceived(int prNumber)
       {
          CodeReview c;
          c.outdated = false;
-         c.id = commentData["id"].toInt();
-         c.body = commentData["body"].toString();
-         c.creation = commentData["created_at"].toVariant().toDateTime();
-         c.association = commentData["author_association"].toString();
-         c.diff.diff = commentData["diff_hunk"].toString();
-         c.diff.file = commentData["path"].toString();
+         c.id = commentData.toObject()["id"].toInt();
+         c.body = commentData.toObject()["body"].toString();
+         c.creation = commentData.toObject()["created_at"].toVariant().toDateTime();
+         c.association = commentData.toObject()["author_association"].toString();
+         c.diff.diff = commentData.toObject()["diff_hunk"].toString();
+         c.diff.file = commentData.toObject()["path"].toString();
 
          if (commentData.toObject().contains("line"))
-            c.diff.line = commentData["line"].toInt();
+            c.diff.line = commentData.toObject()["line"].toInt();
          else
          {
-            if (commentData["position"].toInt() != 0)
-               c.diff.line = commentData["position"].toInt();
+            if (commentData.toObject()["position"].toInt() != 0)
+               c.diff.line = commentData.toObject()["position"].toInt();
             else
                c.outdated = true;
          }
 
          if (commentData.toObject().contains("original_line"))
-            c.diff.originalLine = commentData["original_line"].toInt();
+            c.diff.originalLine = commentData.toObject()["original_line"].toInt();
          else
-            c.diff.originalLine = commentData["original_position"].toInt();
+            c.diff.originalLine = commentData.toObject()["original_position"].toInt();
 
-         c.reviewId = commentData["pull_request_review_id"].toInt();
-         c.replyToId = commentData["in_reply_to_id"].toInt();
+         c.reviewId = commentData.toObject()["pull_request_review_id"].toInt();
+         c.replyToId = commentData.toObject()["in_reply_to_id"].toInt();
 
          GitServer::User sAssignee;
-         sAssignee.id = commentData["user"].toObject()["id"].toInt();
-         sAssignee.url = commentData["user"].toObject()["html_url"].toString();
-         sAssignee.name = commentData["user"].toObject()["login"].toString();
-         sAssignee.avatar = commentData["user"].toObject()["avatar_url"].toString();
-         sAssignee.type = commentData["user"].toObject()["type"].toString();
+         sAssignee.id = commentData.toObject()["user"].toObject()["id"].toInt();
+         sAssignee.url = commentData.toObject()["user"].toObject()["html_url"].toString();
+         sAssignee.name = commentData.toObject()["user"].toObject()["login"].toString();
+         sAssignee.avatar = commentData.toObject()["user"].toObject()["avatar_url"].toString();
+         sAssignee.type = commentData.toObject()["user"].toObject()["type"].toString();
 
          c.creator = std::move(sAssignee);
          comments.append(std::move(c));
@@ -902,30 +903,30 @@ void GitHubRestApi::onCommitsReceived(int prNumber)
       for (const auto &commitData : commitsArray)
       {
          Commit c;
-         c.url = commitData["html_url"].toString();
-         c.sha = commitData["sha"].toString();
+         c.url = commitData.toObject()["html_url"].toString();
+         c.sha = commitData.toObject()["sha"].toString();
 
          GitServer::User sAuthor;
-         sAuthor.id = commitData["author"].toObject()["id"].toInt();
-         sAuthor.url = commitData["author"].toObject()["html_url"].toString();
-         sAuthor.name = commitData["author"].toObject()["login"].toString();
-         sAuthor.avatar = commitData["author"].toObject()["avatar_url"].toString();
-         sAuthor.type = commitData["author"].toObject()["type"].toString();
+         sAuthor.id = commitData.toObject()["author"].toObject()["id"].toInt();
+         sAuthor.url = commitData.toObject()["author"].toObject()["html_url"].toString();
+         sAuthor.name = commitData.toObject()["author"].toObject()["login"].toString();
+         sAuthor.avatar = commitData.toObject()["author"].toObject()["avatar_url"].toString();
+         sAuthor.type = commitData.toObject()["author"].toObject()["type"].toString();
 
          c.author = std::move(sAuthor);
 
          GitServer::User sCommitter;
-         sCommitter.id = commitData["committer"].toObject()["id"].toInt();
-         sCommitter.url = commitData["committer"].toObject()["html_url"].toString();
-         sCommitter.name = commitData["committer"].toObject()["login"].toString();
-         sCommitter.avatar = commitData["committer"].toObject()["avatar_url"].toString();
-         sCommitter.type = commitData["committer"].toObject()["type"].toString();
+         sCommitter.id = commitData.toObject()["committer"].toObject()["id"].toInt();
+         sCommitter.url = commitData.toObject()["committer"].toObject()["html_url"].toString();
+         sCommitter.name = commitData.toObject()["committer"].toObject()["login"].toString();
+         sCommitter.avatar = commitData.toObject()["committer"].toObject()["avatar_url"].toString();
+         sCommitter.type = commitData.toObject()["committer"].toObject()["type"].toString();
 
          c.commiter = std::move(sCommitter);
 
-         c.message = commitData["commit"].toObject()["message"].toString();
+         c.message = commitData.toObject()["commit"].toObject()["message"].toString();
          c.authorCommittedTimestamp
-             = commitData["commit"].toObject()["author"].toObject()["date"].toVariant().toDateTime();
+             = commitData.toObject()["commit"].toObject()["author"].toObject()["date"].toVariant().toDateTime();
 
          commits.append(std::move(c));
       }
@@ -996,9 +997,9 @@ Issue GitHubRestApi::issueFromJson(const QJsonObject &json) const
 
    for (const auto &label : labels)
    {
-      issue.labels.append({ label["id"].toInt(), label["node_id"].toString(), label["url"].toString(),
-                            label["name"].toString(), label["description"].toString(), label["color"].toString(),
-                            label["default"].toBool() });
+      issue.labels.append({ label.toObject()["id"].toInt(), label.toObject()["node_id"].toString(), label.toObject()["url"].toString(),
+                            label.toObject()["name"].toString(), label.toObject()["description"].toString(), label.toObject()["color"].toString(),
+                            label.toObject()["default"].toBool() });
    }
 
    const auto assignees = json["assignees"].toArray();
@@ -1006,15 +1007,15 @@ Issue GitHubRestApi::issueFromJson(const QJsonObject &json) const
    for (const auto &assignee : assignees)
    {
       GitServer::User sAssignee;
-      sAssignee.id = assignee["id"].toInt();
-      sAssignee.url = assignee["html_url"].toString();
-      sAssignee.name = assignee["login"].toString();
-      sAssignee.avatar = assignee["avatar_url"].toString();
+      sAssignee.id = assignee.toObject()["id"].toInt();
+      sAssignee.url = assignee.toObject()["html_url"].toString();
+      sAssignee.name = assignee.toObject()["login"].toString();
+      sAssignee.avatar = assignee.toObject()["avatar_url"].toString();
 
       issue.assignees.append(sAssignee);
    }
-
-   if (const auto value = json["milestone"].toString(); !json["milestone"].toObject().isEmpty() && value != "NULL")
+   const auto value = json["milestone"].toString();
+   if (!json["milestone"].toObject().isEmpty() && value != "NULL")
    {
       Milestone sMilestone { json["milestone"].toObject()[QStringLiteral("id")].toInt(),
                              json["milestone"].toObject()[QStringLiteral("number")].toInt(),
@@ -1054,9 +1055,9 @@ PullRequest GitHubRestApi::prFromJson(const QJsonObject &json) const
 
    for (const auto &label : labels)
    {
-      pr.labels.append({ label["id"].toInt(), label["node_id"].toString(), label["url"].toString(),
-                         label["name"].toString(), label["description"].toString(), label["color"].toString(),
-                         label["default"].toBool() });
+      pr.labels.append({ label.toObject()["id"].toInt(), label.toObject()["node_id"].toString(), label.toObject()["url"].toString(),
+                         label.toObject()["name"].toString(), label.toObject()["description"].toString(), label.toObject()["color"].toString(),
+                         label.toObject()["default"].toBool() });
    }
 
    const auto assignees = json["assignees"].toArray();
@@ -1064,10 +1065,10 @@ PullRequest GitHubRestApi::prFromJson(const QJsonObject &json) const
    for (const auto &assignee : assignees)
    {
       GitServer::User sAssignee;
-      sAssignee.id = assignee["id"].toInt();
-      sAssignee.url = assignee["html_url"].toString();
-      sAssignee.name = assignee["login"].toString();
-      sAssignee.avatar = assignee["avatar_url"].toString();
+      sAssignee.id = assignee.toObject()["id"].toInt();
+      sAssignee.url = assignee.toObject()["html_url"].toString();
+      sAssignee.name = assignee.toObject()["login"].toString();
+      sAssignee.avatar = assignee.toObject()["avatar_url"].toString();
 
       pr.assignees.append(sAssignee);
    }

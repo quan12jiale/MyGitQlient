@@ -36,7 +36,7 @@ CommitHistoryView::CommitHistoryView(const QSharedPointer<GitCache> &cache, cons
    header()->setContextMenuPolicy(Qt::CustomContextMenu);
    connect(header(), &QHeaderView::customContextMenuRequested, this, &CommitHistoryView::onHeaderContextMenu);
 
-   connect(mCache.get(), &GitCache::signalCacheUpdated, this, &CommitHistoryView::refreshView);
+   connect(mCache.data(), &GitCache::signalCacheUpdated, this, &CommitHistoryView::refreshView);
 
    connect(this, &CommitHistoryView::doubleClicked, this, [this](const QModelIndex &index) {
       if (mCommitHistoryModel)

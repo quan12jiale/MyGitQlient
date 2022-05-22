@@ -39,7 +39,7 @@ void JobFetcher::processData(const QJsonDocument &json)
       {
          const auto jobs = view.toObject()[QStringLiteral("jobs")].toArray();
 
-         jobsMap += extractJobs(jobs, view[QStringLiteral("name")].toString());
+         jobsMap += extractJobs(jobs, view.toObject()[QStringLiteral("name")].toString());
       }
    }
    else if (jsonObject.contains(QStringLiteral("jobs")))

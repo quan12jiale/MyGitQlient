@@ -2,7 +2,7 @@
 
 #include <IFetcher.h>
 #include <JenkinsJobInfo.h>
-
+#include "References.h"
 #include <QFrame>
 
 class CheckBox;

@@ -223,15 +223,16 @@ bool FileDiffWidget::configure(const QString &currentSha, const QString &previou
    QString text;
    QScopedPointer<GitHistory> git(new GitHistory(mGit));
 
-   if (const auto ret
-       = git->getFileDiff(currentSha == CommitInfo::ZERO_SHA ? QString() : currentSha, previousSha, destFile, isCached);
-       ret.success)
+   const auto ret
+	   = git->getFileDiff(currentSha == CommitInfo::ZERO_SHA ? QString() : currentSha, previousSha, destFile, isCached);
+   if (ret.success)
    {
       text = ret.output;
 
       if (text.isEmpty())
       {
-         if (const auto ret = git->getUntrackedFileDiff(destFile); ret.success)
+		  const auto ret = git->getUntrackedFileDiff(destFile);
+         if (ret.success)
             text = ret.output;
       }
 
@@ -372,8 +373,10 @@ void FileDiffWidget::moveChunkUp()
    {
       auto &chunk = mChunks.chunks.at(i);
 
-      if (auto [chunkNewStart, chunkOldStart] = std::make_tuple(chunk.newFile.startLine, chunk.oldFile.startLine);
-          chunkNewStart < mCurrentChunkLine || chunkOldStart < mCurrentChunkLine)
+	  std::tuple<int, int> tup = std::make_tuple(chunk.newFile.startLine, chunk.oldFile.startLine);
+	  int chunkNewStart = std::get<0>(tup);
+	  int chunkOldStart = std::get<1>(tup);
+      if (chunkNewStart < mCurrentChunkLine || chunkOldStart < mCurrentChunkLine)
       {
          if (chunkNewStart < mCurrentChunkLine)
             mCurrentChunkLine = chunkNewStart;
@@ -546,8 +549,8 @@ void FileDiffWidget::stageChunk(const QString &id)
          f.close();
 
          QScopedPointer<GitPatches> git(new GitPatches(mGit));
-
-         if (const auto ret = git->stagePatch(f.fileName()); ret.success)
+		 const auto ret = git->stagePatch(f.fileName());
+         if (ret.success)
             QMessageBox::information(this, tr("Changes staged!"), tr("The chunk has been successfully staged."));
          else
          {

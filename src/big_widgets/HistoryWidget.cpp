@@ -389,7 +389,8 @@ void HistoryWidget::onDiffFontSizeChanged()
 
 void HistoryWidget::search()
 {
-   if (const auto text = mSearchInput->text(); !text.isEmpty())
+	const auto text = mSearchInput->text();
+   if (!text.isEmpty())
    {
       auto commitInfo = mCache->commitInfo(text);
 
@@ -543,10 +544,11 @@ void HistoryWidget::returnToView()
 
 void HistoryWidget::cherryPickCommit()
 {
-   if (auto commit = mCache->commitInfo(mSearchInput->text()); commit.isValid())
+	auto commit = mCache->commitInfo(mSearchInput->text());
+   if (commit.isValid())
    {
       const auto lastShaBeforeCommit = mGit->getLastCommit().output.trimmed();
-      const auto git = QScopedPointer<GitLocal>(new GitLocal(mGit));
+	  QScopedPointer<GitLocal> git(new GitLocal(mGit));
       const auto ret = git->cherryPickCommit(commit.sha);
 
       if (ret.success)
@@ -589,7 +591,7 @@ void HistoryWidget::cherryPickCommit()
    else
    {
       const auto lastShaBeforeCommit = mGit->getLastCommit().output.trimmed();
-      const auto git = QScopedPointer<GitLocal>(new GitLocal(mGit));
+	  QScopedPointer<GitLocal> git(new GitLocal(mGit));
       const auto ret = git->cherryPickCommit(mSearchInput->text());
 
       if (ret.success)

@@ -28,7 +28,7 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QVector>
-
+#include <assert.h>
 class GitBase;
 class GitCache;
 

@@ -5,7 +5,7 @@
 #include <RevisionFiles.h>
 #include <WipRevisionInfo.h>
 
-#include <optional>
+//#include <optional>
 
 class GitBase;
 class GitCache;
@@ -24,8 +24,8 @@ public:
 
    QVector<QString> getUntrackedFiles() const;
    bool updateWip() const;
-   std::optional<QPair<QString, RevisionFiles>> getWipInfo() const;
-   std::optional<FileStatus> getFileStatus(const QString &filePath) const;
+   std::pair<QPair<QString, RevisionFiles>, bool> getWipInfo() const;
+   std::pair<FileStatus, bool> getFileStatus(const QString &filePath) const;
 
 private:
    QSharedPointer<GitBase> mGit;

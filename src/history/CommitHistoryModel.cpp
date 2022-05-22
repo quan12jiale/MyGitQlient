@@ -97,7 +97,7 @@ QVariant CommitHistoryModel::getToolTipData(const CommitInfo &r) const
       auxMessage.append(tr("<p><b>Tags: </b>%1</p>").arg(tags.join(",")));
 
    QDateTime d;
-   d.setSecsSinceEpoch(r.dateSinceEpoch.count());
+   d.setMSecsSinceEpoch(r.dateSinceEpoch.count() * 1000);
 
    QLocale locale;
 
@@ -113,7 +113,8 @@ QVariant CommitHistoryModel::getToolTipData(const CommitInfo &r) const
 
    if (mGitServerCache)
    {
-      if (const auto pr = mGitServerCache->getPullRequest(sha); pr.isValid())
+	   const auto pr = mGitServerCache->getPullRequest(sha);
+      if (pr.isValid())
          tooltip.append(tr("<p><b>PR state: </b>%1.</p>").arg(pr.state.state));
    }
 
@@ -135,7 +136,7 @@ QVariant CommitHistoryModel::getDisplayData(const CommitInfo &rev, int column) c
          return author;
       }
       case CommitHistoryColumns::Date: {
-         return QDateTime::fromSecsSinceEpoch(rev.dateSinceEpoch.count()).toString("dd MMM yyyy hh:mm");
+         return QDateTime::fromMSecsSinceEpoch(rev.dateSinceEpoch.count() * 1000).toString("dd MMM yyyy hh:mm");
       }
       default:
          return QVariant();

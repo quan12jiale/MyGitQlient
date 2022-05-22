@@ -190,7 +190,7 @@ GitServer::Platform GitServerCache::getPlatform() const
 
 IRestApi *GitServerCache::getApi() const
 {
-   return mApi.get();
+   return mApi.data();
 }
 
 void GitServerCache::initLabels(const QVector<Label> &labels)

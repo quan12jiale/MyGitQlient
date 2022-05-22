@@ -28,7 +28,7 @@ CreateIssueDlg::CreateIssueDlg(const QSharedPointer<GitServerCache> &gitServerCa
    ui->setupUi(this);
 
    connect(mGitServerCache->getApi(), &IRestApi::issueUpdated, this, &CreateIssueDlg::onIssueCreated);
-   connect(mGitServerCache.get(), &GitServerCache::errorOccurred, this, &CreateIssueDlg::onGitServerError);
+   connect(mGitServerCache.data(), &GitServerCache::errorOccurred, this, &CreateIssueDlg::onGitServerError);
 
    onMilestones(mGitServerCache->getMilestones());
    onLabels(mGitServerCache->getLabels());
@@ -37,8 +37,8 @@ CreateIssueDlg::CreateIssueDlg(const QSharedPointer<GitServerCache> &gitServerCa
 
    connect(ui->teDescription, &QTextEdit::textChanged,
            [this]() { m_content.setText(ui->teDescription->toPlainText()); });
-
-   if (QFile f(workingDir + "/.github/ISSUE_TEMPLATE.md"); f.exists())
+   QFile f(workingDir + "/.github/ISSUE_TEMPLATE.md");
+   if (f.exists())
    {
       ui->cbIssueType->setVisible(false);
       ui->lIssueType->setVisible(false);
@@ -215,8 +215,8 @@ void CreateIssueDlg::fillIssueTypeComboBox(const QString &workingDir)
 void CreateIssueDlg::onIssueTemplateChange(int newIndex)
 {
    const auto fileName = ui->cbIssueType->itemData(newIndex).toString();
-
-   if (QFile f(fileName); f.exists())
+   QFile f(fileName);
+   if (f.exists())
    {
       if (f.open(QIODevice::ReadOnly))
       {

@@ -25,7 +25,7 @@
 
 #include <QFrame>
 #include <QVector>
-
+#include "References.h"
 class GitBase;
 class FileDiffView;
 class PrChangeListItem;

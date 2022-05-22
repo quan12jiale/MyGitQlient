@@ -30,7 +30,7 @@ QVector<QString> GitWip::getUntrackedFiles() const
    return ret;
 }
 
-std::optional<QPair<QString, RevisionFiles>> GitWip::getWipInfo() const
+std::pair<QPair<QString, RevisionFiles>, bool> GitWip::getWipInfo() const
 {
    QLog_Debug("Git", QString("Executing processWip."));
 
@@ -54,13 +54,13 @@ std::optional<QPair<QString, RevisionFiles>> GitWip::getWipInfo() const
 
       auto files = fakeWorkDirRevFile(diffIndex, diffIndexCached);
 
-      return qMakePair(parentSha, std::move(files));
+      return std::make_pair(qMakePair(parentSha, std::move(files)), true);
    }
 
-   return std::nullopt;
+   return std::make_pair(qMakePair(QString{}, RevisionFiles{}), false);
 }
 
-std::optional<GitWip::FileStatus> GitWip::getFileStatus(const QString &filePath) const
+std::pair<GitWip::FileStatus, bool> GitWip::getFileStatus(const QString &filePath) const
 {
    QLog_Debug("Git", QString("Getting file status."));
 
@@ -75,19 +75,19 @@ std::optional<GitWip::FileStatus> GitWip::getFileStatus(const QString &filePath)
 #endif
 
       if (lines.count() > 1)
-         return FileStatus::DeletedByThem;
+         return std::make_pair(FileStatus::DeletedByThem, true);
       else
       {
          const auto statusField = lines[0].split(" ").last().split("\t").constFirst();
 
          if (statusField.count() == 2)
-            return FileStatus::BothModified;
+            return std::make_pair(FileStatus::BothModified, true);
 
-         return FileStatus::DeletedByUs;
+         return std::make_pair(FileStatus::DeletedByUs, true);
       }
    }
 
-   return std::nullopt;
+   return std::make_pair(FileStatus::BothModified, false);
 }
 
 bool GitWip::updateWip() const
@@ -95,9 +95,10 @@ bool GitWip::updateWip() const
    const auto files = getUntrackedFiles();
    mCache->setUntrackedFilesList(std::move(files));
 
-   if (const auto info = getWipInfo())
+   const auto info = getWipInfo();
+   if (info.second)
    {
-      return mCache->updateWipCommit(info->first, info->second);
+      return mCache->updateWipCommit(info.first.first, info.first.second);
    }
 
    return false;
@@ -119,7 +120,8 @@ RevisionFiles GitWip::fakeWorkDirRevFile(const QString &diffIndex, const QString
 
    for (auto i = 0; i < rf.count(); i++)
    {
-      if (const auto cachedIndex = cachedFiles.mFiles.indexOf(rf.getFile(i)); cachedIndex != -1)
+	   const auto cachedIndex = cachedFiles.mFiles.indexOf(rf.getFile(i));
+      if (cachedIndex != -1)
       {
          if (cachedFiles.statusCmp(cachedIndex, RevisionFiles::CONFLICT))
          {
@@ -127,7 +129,7 @@ RevisionFiles GitWip::fakeWorkDirRevFile(const QString &diffIndex, const QString
 
             const auto status = getFileStatus(rf.getFile(i));
 
-            switch (status.value_or(GitWip::FileStatus::BothModified))
+            switch (status.first)
             {
                case GitWip::FileStatus::DeletedByThem:
                case GitWip::FileStatus::DeletedByUs:

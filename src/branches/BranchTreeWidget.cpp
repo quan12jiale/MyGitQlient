@@ -42,7 +42,8 @@ void BranchTreeWidget::reloadCurrentBranchLink() const
 
 void BranchTreeWidget::showBranchesContextMenu(const QPoint &pos)
 {
-   if (const auto item = itemAt(pos); item != nullptr)
+	const auto item = itemAt(pos);
+   if (item != nullptr)
    {
       auto selectedBranch = item->data(0, FullNameRole).toString();
 
@@ -67,7 +68,8 @@ void BranchTreeWidget::showBranchesContextMenu(const QPoint &pos)
          const auto removeRemote = menu->addAction(tr("Remove remote"));
          connect(removeRemote, &QAction::triggered, this, [this, item]() {
             QScopedPointer<GitRemote> git(new GitRemote(mGit));
-            if (const auto ret = git->removeRemote(item->text(0)); ret.success)
+			const auto ret = git->removeRemote(item->text(0));
+            if (ret.success)
             {
                mCache->deleteReference(item->data(0, ShaRole).toString(), References::Type::RemoteBranches,
                                        item->text(0));
@@ -144,7 +146,8 @@ void BranchTreeWidget::checkoutBranch(QTreeWidgetItem *item)
 
             if (!uiUpdateRequested)
             {
-               if (auto oldItem = findChildItem(mGit->getCurrentBranch()); !oldItem.empty())
+			   auto oldItem = findChildItem(mGit->getCurrentBranch());
+               if (!oldItem.empty())
                {
                   oldItem.at(0)->setData(0, GitQlient::IsCurrentBranchRole, false);
                   oldItem.clear();

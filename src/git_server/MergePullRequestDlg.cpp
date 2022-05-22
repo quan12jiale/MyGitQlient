@@ -72,8 +72,8 @@ void MergePullRequestDlg::onPRMerged()
    QMessageBox::information(this, tr("PR merged!"), tr("The pull request has been merged."));
 
    QScopedPointer<GitRemote> git(new GitRemote(mGit));
-
-   if (auto ret = git->pull(); ret.success)
+   auto ret = git->pull();
+   if (ret.success)
    {
       git->prune();
       emit signalRepositoryUpdated();

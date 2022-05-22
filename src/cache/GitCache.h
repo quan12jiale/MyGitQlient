@@ -32,7 +32,7 @@
 #include <QObject>
 #include <QSharedPointer>
 
-#include <optional>
+//#include <optional>
 
 struct WipRevisionInfo;
 
@@ -64,7 +64,7 @@ public:
    void updateCommit(const QString &oldSha, CommitInfo newCommit);
 
    bool insertRevisionFiles(const QString &sha1, const QString &sha2, const RevisionFiles &file);
-   std::optional<RevisionFiles> revisionFile(const QString &sha1, const QString &sha2) const;
+   std::pair<RevisionFiles, bool> revisionFile(const QString &sha1, const QString &sha2) const;
 
    void clearReferences();
    void insertReference(const QString &sha, References::Type type, const QString &reference);
