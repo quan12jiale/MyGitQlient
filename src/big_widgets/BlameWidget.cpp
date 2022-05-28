@@ -7,6 +7,7 @@
 #include <CommitInfo.h>
 #include <FileBlameWidget.h>
 #include <GitHistory.h>
+#include <GitServerCache.h>
 #include <RepositoryViewDelegate.h>
 
 #include <QApplication>

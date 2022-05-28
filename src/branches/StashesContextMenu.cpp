@@ -3,7 +3,7 @@
 #include <BranchDlg.h>
 #include <GitQlientStyles.h>
 #include <GitStashes.h>
-
+#include <GitCache.h>
 #include <QMessageBox>
 
 StashesContextMenu::StashesContextMenu(const QSharedPointer<GitBase> &git, const QString &stashId, QWidget *parent)
